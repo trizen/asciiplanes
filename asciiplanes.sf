@@ -1,11 +1,15 @@
-#!/usr/bin/ruby
+#!/usr/bin/sidef
+
+#`(if running under some shell) {
+    eval 'exec /usr/bin/sidef $0 ${1+"$@"}'
+}
 
 # Author: Daniel "Trizen" Șuteu
 # License: GPLv3
 # Created on: 21 August 2012
 # Latest edit on: 10 November 2013
 # Translated to Sidef in 21 September 2014
-# Websites: http://trizen.googlecode.com
+# Website: https://github.com/trizen/asciiplanes
 
 # Find the planes' positions on a grid. (text-based game)
 
@@ -18,7 +22,7 @@ var asciitable = (
 var pkgname = 'asciiplanes';
 var version = 0.01;
 
-## Game run-time constants
+## Game variables
 var BOARD_SIZE = 8;
 var PLANES_NUM = 3;
 
