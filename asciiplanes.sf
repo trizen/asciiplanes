@@ -9,6 +9,7 @@
 # Created on: 21 August 2012
 # Latest edit on: 10 November 2013
 # Translated to Sidef in 21 September 2014
+# Latest edit on: 08 March 2015
 # Website: https://github.com/trizen/asciiplanes
 
 # Find the planes' positions on a grid. (text-based game)
@@ -20,7 +21,7 @@ var asciitable = (
 
 ## Package variables
 var pkgname = 'asciiplanes';
-var version = 0.01;
+var version = 0.02;
 
 ## Game variables
 var BOARD_SIZE = 8;
@@ -35,7 +36,7 @@ var miss_char  = %q{`};
 
 func usage {
     print <<"EOT";
-usage: #{__FILE__} [options]
+usage: #{__MAIN__} [options]
 
 main:
         --size=i    : length side of the board (default: #{BOARD_SIZE})
@@ -43,14 +44,13 @@ main:
         --wrap!     : wrap the plane around the play board (default: #{wrap_plane})
         --hit=s     : character used when a plane is hit (default: "#{hit_char}")
         --miss=s    : character used when a plane is missed (default: "#{miss_char}")
-        --planeN=s  : character used to draw the Nth killed plane (N=[1-99])
 
 help:
         --help      : print this message and exit
         --version   : print the version number and exit
 
 example:
-        #{__FILE__} --size=12 --planes=6 --hit='*'
+        #{__MAIN__} --size=12 --planes=6 --hit='*'
 
 EOT
 
@@ -87,8 +87,7 @@ var info_board = 1.to(BOARD_SIZE).map { [' '] * BOARD_SIZE };
 var letters = Hash.new;
 0 ... play_board.offset -> each { |i|
     static char = 'a';
-    letters[char] = i;
-    char++;
+    letters[char++] = i;
 }
 
 #---------------------------------------------------------------
@@ -96,7 +95,9 @@ var letters = Hash.new;
 func pointers(board, x, y, indices) {
 
     var output = [];
-    [[0,0]] + indices.grep{.is_an(Array)} -> each { |pair|
+    [[0,0]] + indices -> each { |pair|
+
+        pair.is_an(Array) || next;
         var (row, col) = (x + pair[0], y + pair[1]);
 
         if (row > board.offset) {
@@ -185,9 +186,8 @@ func print_ascii_table {
 
     var char = 'a';
     info_board.each { |row|
-        table.addRow([char, row...]);
+        table.addRow([char++, row...]);
         table.addRowLine();
-        char++;
     }
 
     say table.drawit;
@@ -253,7 +253,7 @@ while (count > 0) {
                    data:   [item]*8,
                    plane:  code.call($board, $x, $y),
                   )
-              || "#{__FILE__}: unexpected error!".die;
+              || "#{__MAIN__}: unexpected error!".die;
         }
 
         count--;
