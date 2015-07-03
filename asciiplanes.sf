@@ -9,7 +9,7 @@
 # Created on: 21 August 2012
 # Latest edit on: 10 November 2013
 # Translated to Sidef in 21 September 2014
-# Latest edit on: 08 March 2015
+# Latest edit on: 03 July 2015
 # Website: https://github.com/trizen/asciiplanes
 
 # Find the planes' positions on a grid. (text-based game)
@@ -21,7 +21,7 @@ var asciitable = (
 
 ## Package variables
 var pkgname = 'asciiplanes';
-var version = 0.02;
+var version = 0.03;
 
 ## Game variables
 var BOARD_SIZE = 8;
@@ -85,7 +85,7 @@ var play_board = 1.to(BOARD_SIZE).map { [nil] * BOARD_SIZE };
 var info_board = 1.to(BOARD_SIZE).map { [' '] * BOARD_SIZE };
 
 var letters = Hash.new;
-0 ... play_board.offset -> each { |i|
+play_board.range.each { |i|
     static char = 'a';
     letters[char++] = i;
 }
@@ -100,12 +100,12 @@ func pointers(board, x, y, indices) {
         pair.is_an(Array) || next;
         var (row, col) = (x + pair[0], y + pair[1]);
 
-        if (row > board.offset) {
+        if (row > board.end) {
             wrap_plane || return [];
             row %= board.len;
         }
 
-        if (col > board[row].offset) {
+        if (col > board[row].end) {
             wrap_plane || return [];
             col %= board[row].len;
         }
@@ -172,7 +172,7 @@ func assign(change=false, plane=[], data=[]) {
         }
     );
 
-    0 ... plane.offset -> each { |i|
+    plane.range.each { |i|
         *plane[i] = data[i];
     }
 
@@ -229,8 +229,8 @@ while (count > 0) {
     var input = Sys.scanln(text).lc;
     input ~~ ['q', 'quit'] && break;
 
-    input =~ /^\h*([a-z]+)\D*([0-9]+)/ ?? || next;
-    $1 ~~ letters                         || next;
+    input ~~ /^\h*([a-z]+)\D*([0-9]+)/ || next;
+    $1    ~~ letters                   || next;
 
     var x = letters[$1];
     var y = $2.to_num.dec;
@@ -242,7 +242,7 @@ while (count > 0) {
     if (point.is_a(nil)) {
         info_board[x][y] = miss_char;
     }
-    elsif (point =~ /^head_(\d)$/i) {
+    elsif (point ~~ /^head_(\d)$/i) {
         var dir  = $1.to_num;
         var item = plane_chars[(PLANES_NUM - count) % plane_chars.len];
         var code = directions[dir];
@@ -258,7 +258,7 @@ while (count > 0) {
 
         count--;
     }
-    elsif (point =~ /^hit_\d$/i) {
+    elsif (point ~~ /^hit_\d$/i) {
         info_board[x][y] = hit_char;
     }
 
